@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dünya Pusulası - Küresel Haber Terminali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:      #0f0f0f;
+  --ink-2:    #2a2a2a;
+  --ink-3:    #6a6a6a;
+  --ink-4:    #a8a8a8;
+  --paper:    #f6f3ed;
+  --paper-2:  #eee9df;
+  --paper-3:  #e2dbd0;
+  --accent:    #c8411a;
+  --accent-2: #e8621f;
+  --gold:     #b8962e;
+  --blue:     #1a4a7a;
+  --green:    #1a5c3a;
+  --serif:    'Instrument Serif', Georgia, serif;
+  --mono:     'DM Mono', 'Courier New', monospace;
+  --sans:     'Syne', system-ui, sans-serif;
+  --r:        6px;
+  --r-lg:     14px;
+  --shadow:    0 4px 24px rgba(0,0,0,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0 2rem;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--accent);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 64px;
+}
+.masthead-left { display: flex; align-items: center; gap: 1.5rem; }
+.logo { font-family: var(--serif); font-size: 1.65rem; letter-spacing: -0.02em; color: var(--paper); line-height: 1; cursor: pointer; user-select: none; transition: opacity 0.2s, transform 0.1s; }
+.logo:hover { opacity: 0.8; }
+.logo:active { transform: scale(0.97); }
+.logo span { color: var(--accent-2); transition: opacity 0.2s; }
+.edition-tag {
+  font-family: var(--mono); font-size: 0.63rem; color: #666;
+  letter-spacing: 0.1em; border: 1px solid #333; padding: 3px 8px; border-radius: 3px;
+}
+
+/* ── AYARLAR VE TTS BUTONLARI ── */
+.settings-btn { background: transparent; border: 1px solid #333; color: #bbb; font-size: 1.1rem; cursor: pointer; border-radius: 4px; padding: 2px 8px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; margin-left: 10px; }
+.settings-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tts-btn { background: transparent; border: 1px solid transparent; color: var(--ink-3); cursor: pointer; margin-left: auto; display: flex; align-items: center; justify-content: center; transition: all 0.2s; padding: 4px; border-radius: 6px; }
+.tts-btn:hover { color: var(--accent); background: var(--paper-3); }
+.tts-btn:active { transform: scale(0.92); }
+.modal-tts-select { background: transparent; border: 1px solid var(--paper-3); color: var(--ink-3); font-family: var(--mono); font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; cursor: pointer; outline: none; }
+.modal-tts-select:hover { border-color: var(--accent); color: var(--ink); }
+#settings-modal .modal { height: auto; max-width: 400px; padding-bottom: 1rem; }
+.settings-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--paper-3); }
+.settings-row:last-child { border-bottom: none; }
+.settings-label { font-family: var(--sans); font-size: 0.9rem; font-weight: 600; color: var(--ink); }
+.settings-desc { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); margin-top: 4px; }
+.settings-select { font-family: var(--mono); font-size: 0.8rem; padding: 6px; border-radius: 4px; border: 1px solid var(--paper-3); background: var(--paper); outline: none; }
+.switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* ── TICKER ── */
+.ticker-bar {
+  background: #141414; color: #e0e0e0;
+  padding: 8px 0; overflow: hidden; white-space: nowrap;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 0.76rem; letter-spacing: 0.04em;
+  border-bottom: 1px solid #252525;
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+}
+.ticker-inner { display: inline-block; animation: ticker 60s linear infinite; }
+.ticker-inner:hover { animation-play-state: paused; }
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.tick { display: inline-block; margin: 0 2rem; }
+.tick-name { color: #bbb; margin-right: 6px; font-weight: 300; font-size: 0.72rem; }
+.tick-val { color: #ffffff; margin-right: 5px; font-weight: 500; }
+.tick-up { color: #7ddb9a; font-size: 0.7rem; }
+.tick-dn { color: #f08080; font-size: 0.7rem; }
+.tick-sep { color: #383838; margin: 0 0.25rem; }
+
+/* ── STATUS DOTS & ANIMATIONS ── */
+.status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle; }
+.dot-green { background: #4caf50; animation: pulse 2s infinite; }
+.dot-orange { background: #ff9800; }
+.dot-red { background: #f44336; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+/* ── FILTER & SEARCH STYLES ── */
+#channel-filter, #lang-filter, #search-filter {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--paper-3);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  transition: all 0.2s;
+  outline: none;
+}
+#channel-filter:hover, #lang-filter:hover, #search-filter:hover {
+  border-color: var(--accent);
+  background: var(--paper-2);
+}
+#channel-filter:focus, #lang-filter:focus, #search-filter:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(200, 65, 26, 0.1);
+  background: var(--paper);
+}
+#channel-filter, #lang-filter { cursor: pointer; }
+#search-filter::placeholder { color: var(--ink-4); }
+
+/* ── LAYOUT ── */
+.container { 
+  max-width: 1440px; 
+  margin: 0 auto; 
+  padding: 0 2rem;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 0;
+}
+
+/* ── FEED COLUMN ── */
+.feed-col {
+  border-right: 1px solid var(--paper-3);
+  padding: 0 2.5rem 2rem 0;
+}
+
+/* Section Header Modified for Date & Clock */
+.section-head-wrap {
+  position: sticky;
+  top: 98px;
+  background: var(--paper);
+  z-index: 97;
+  padding: 1.5rem 0 0.85rem 0;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid var(--ink);
+}
+.section-head-top {
+  display: flex; align-items: baseline; gap: 1rem; margin-bottom: 8px;
+}
+.section-head-top h2 {
+  font-family: var(--sans); font-size: 0.68rem; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-2);
+}
+.section-head-top .count { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-4); }
+.section-head-top .live-badge {
+  margin-left: auto; font-family: var(--mono); font-size: 0.6rem;
+  color: var(--accent); letter-spacing: 0.1em; display: flex; align-items: center; gap: 5px;
+}
+#live-clock {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3); letter-spacing: 0.03em;
+}
+
+/* ── NEWS CARDS ── */
+#news-feed { display: flex; flex-direction: column; }
+
+.news-card {
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--paper-3);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.2rem;
+  align-items: start;
+  cursor: pointer;
+  transition: all 0.18s;
+  animation: fadeUp 0.4s ease both;
+}
+.news-card:hover {
+  background: var(--paper-2);
+  margin: 0 -1.2rem;
+  padding: 1.4rem 1.2rem;
+  border-radius: var(--r);
+  border-color: transparent;
+}
+@keyframes fadeUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+.card-thumb-wrap {
+  width: 82px;
+  height: 82px;
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--paper-3);
+  border: 1px solid var(--paper-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; 
+  object-position: center; 
+}
+.card-thumb-placeholder {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--ink-3);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.card-meta {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 8px; flex-wrap: wrap;
+}
+.priority-badge {
+  font-family: var(--mono); font-size: 0.56rem; font-weight: 500;
+  letter-spacing: 0.12em; padding: 2px 8px; border-radius: 3px; text-transform: uppercase;
+}
+
+/* Badge Renk Tanımlamaları */
+.p-breaking { background: var(--accent); color: white; }
+.p-high { background: #7a4e0a; color: #fdebc8; }
+.p-normal { background: var(--paper-3); color: var(--ink-3); }
+.p-eco { background: var(--blue); color: #d4e8ff; }
+.p-geo { background: var(--green); color: #d4f0e4; }
+.p-tech { background: #4a3b5c; color: #e6dcf2; }
+.p-pol { background: var(--gold); color: #3a2a00; }
+.p-health { background: #9b2b2b; color: #ffebeb; }
+.p-env { background: #2b6a3a; color: #e1f5e8; }
+.p-sport { background: #b56020; color: #fff0e0; }
+.p-society { background: #5c4a3a; color: #f2ebd9; }
+.p-culture { background: #7a3a5c; color: #f5e1eb; }
+.p-cinema { background: #4a0e17; color: #f9ebeb; }
+.p-sci { background: #008080; color: #e6f2f2; }   
+.p-genel { background: var(--paper-3); color: var(--ink-3); }
+
+.card-source { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-4); }
+.card-time { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-4); margin-left: auto; }
+
+.card-title {
+  font-family: var(--serif); font-size: 1.22rem; line-height: 1.38;
+  color: var(--ink); margin-bottom: 7px; letter-spacing: -0.01em;
+  transition: opacity 0.3s;
+}
+.card-body {
+  font-family: var(--sans); font-size: 0.83rem; line-height: 1.65;
+  color: var(--ink-3); font-weight: 400;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; transition: opacity 0.3s;
+}
+.card-tags {
+  margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+}
+.src-pill {
+  font-family: var(--mono); font-size: 0.58rem; color: var(--ink-3);
+  background: var(--paper-2); border: 1px solid var(--paper-3);
+  border-radius: 3px; padding: 2px 8px;
+}
+
+/* Okundu İkonu ve Gösterge Alanı */
+.card-indicator-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.card-indicator { font-size: 0.75rem; line-height: 1; }
+.read-tick-icon {
+  width: 15px; height: 15px;
+  stroke: #34B7F1; /* WhatsApp mavi */
+  opacity: 0.9;
+  animation: fadeUp 0.3s ease;
+}
+
+/* ── SKELETON ── */
+.skeleton { background: var(--paper-3); border-radius: var(--r); animation: shimmer 1.4s ease infinite alternate; }
+@keyframes shimmer { from { opacity:0.45; } to { opacity:0.9; } }
+.sk-title { height: 22px; width: 75%; margin-bottom: 10px; }
+.sk-body { height: 14px; width: 100%; margin-bottom: 7px; }
+.sk-body-2 { height: 14px; width: 60%; }
+
+/* ── SIDEBAR ── */
+.sidebar { 
+  padding: 0 0 2rem 2rem; 
+  margin-top: 3.4rem; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 1.5rem;
+  position: sticky;
+  top: 151px; 
+  height: calc(100vh - 151px);
+  overflow-y: auto;
+  z-index: 95;
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.panel {
+  background: var(--paper-2);
+  border: 1px solid var(--paper-3);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  flex-shrink: 0;
+}
+.panel-head {
+  background: var(--ink); color: var(--paper);
+  padding: 10px 16px; font-family: var(--mono); font-size: 0.63rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-head-accent { background: var(--accent); }
+.panel-body { padding: 0; }
+
+.market-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid var(--paper-3);
+  font-family: var(--mono);
+}
+.market-row:last-child { border-bottom: none; }
+.m-name { font-size: 0.7rem; color: var(--ink-3); }
+.m-val { font-size: 0.9rem; color: var(--ink); font-weight: 500; }
+.m-chg { font-size: 0.68rem; }
+.up { color: #2e7a45; }
+.dn { color: #b02020; }
+
+.cal-item {
+  padding: 10px 16px; border-bottom: 1px solid var(--paper-3);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.cal-item:last-child { border-bottom: none; }
+.cal-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.cal-title { font-size: 0.8rem; font-weight: 600; color: var(--ink); line-height: 1.3; }
+.cal-time { font-family: var(--mono); font-size: 0.63rem; color: var(--ink-4); margin-top: 3px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  padding: 1.5rem;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--paper);
+  border-radius: 16px;
+  max-width: 720px; width: 100%;
+  height: calc(100vh - 130px); 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  transform: translateY(24px) scale(0.98);
+  transition: transform 0.25s ease;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.15);
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+/* Modal İç Düzeni */
+#modal-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Sabit Başlık Bölgesi */
+.modal-fixed-area {
+  flex-shrink: 0;
+  z-index: 10;
+  background: var(--paper);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
+}
+
+/* Scroll Bölgesi */
+.modal-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  background: var(--paper);
+}
+
+.modal-scroll-area::-webkit-scrollbar { width: 4px; }
+.modal-scroll-area::-webkit-scrollbar-track { background: transparent; }
+.modal-scroll-area::-webkit-scrollbar-thumb { background: var(--paper-3); border-radius: 4px; }
+
+/* Modal Grafik Bileşenleri */
+.modal-header {
+  padding: 1.75rem 2.25rem 1.25rem;
+  border-bottom: 1px solid var(--paper-3);
+  position: relative;
+}
+.modal-close-btn {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  background: var(--paper-2); border: 1px solid var(--paper-3);
+  border-radius: 50%; width: 32px; height: 32px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; color: var(--ink-3);
+  transition: all 0.15s; line-height: 1;
+}
+.modal-close-btn:hover { background: var(--paper-3); color: var(--ink); }
+
+.modal-cat-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap;
+}
+.modal-title {
+  font-family: var(--serif); font-size: 1.75rem; line-height: 1.22;
+  color: var(--ink); letter-spacing: -0.02em; margin-bottom: 0.75rem;
+  padding-right: 2rem;
+}
+.modal-meta {
+  font-family: var(--mono); font-size: 0.65rem; color: var(--ink-4);
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+}
+.modal-meta-sep { color: var(--paper-3); }
+
+.modal-lead {
+  padding: 1.5rem 2.25rem;
+  border-bottom: 1px solid var(--paper-3);
+  background: var(--paper-2);
+  display: flex; 
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+.modal-lead-text {
+  flex: 1;
+  font-family: var(--serif); font-size: 1.08rem; font-style: italic;
+  line-height: 1.7; color: var(--ink-2);
+  border-left: 3px solid var(--accent); padding-left: 1rem;
+}
+
+.modal-image-wrap {
+  width: 100%; height: 280px; overflow: hidden;
+  border-bottom: 1px solid var(--paper-3);
+}
+.modal-image {
+  width: 100%; height: 100%; 
+  object-fit: contain; 
+  object-position: center; 
+  display: block; transition: transform 0.3s;
+}
+.modal-image:hover { transform: scale(1.02); }
+
+.modal-analysis {
+  padding: 1.75rem 2.25rem;
+}
+.modal-analysis-head {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal-analysis-head::after {
+  content: ''; flex: 1; height: 1px; background: var(--paper-3);
+}
+.modal-lead-text {
+  /* Diğer kodlar aynı kalacak */
+  line-height: 1.5; /* 1.7'den düşürüldü */
+}
+
+.modal-body-text {
+  /* Diğer kodlar aynı kalacak */
+  line-height: 1.6; /* 1.85'ten düşürüldü */
+}
+.modal-body-text p { 
+  margin-bottom: 0.85rem; /* 1.25rem'den düşürüldü */
+}
+
+/* ── SESLENDİRME (TTS) BUTONU VE SEÇİCİSİ ── */
+.tts-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 4px;
+  border-radius: 6px;
+}
+.tts-btn:hover { color: var(--accent); background: var(--paper-3); }
+.tts-btn:active { transform: scale(0.92); }
+
+.modal-tts-select {
+  background: transparent;
+  border: 1px solid var(--paper-3);
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}
+.modal-tts-select:hover { border-color: var(--accent); color: var(--ink); }
+
+/* AI Loader */
+.ai-loader {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 3rem 2rem; gap: 1rem; text-align: center;
+}
+.ai-loader-ring {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid var(--paper-3); border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+.ai-loader-text {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--ink-3);
+  letter-spacing: 0.04em; line-height: 1.6;
+}
+
+/* MODAL FOOTER PANEL */
+.modal-footer {
+  flex-shrink: 0;
+  padding: 1.25rem 2.25rem;
+  background: var(--paper-2);
+  border-top: 1px solid var(--paper-3);
+  border-radius: 0 0 16px 16px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  z-index: 10;
+}
+.modal-src-pill {
+  font-family: var(--mono); font-size: 0.62rem;
+  border-radius: 4px; padding: 4px 12px;
+  text-decoration: none;
+}
+.pill-dark { background: var(--ink); color: var(--paper); font-weight: 600; }
+.pill-link { background: transparent; color: var(--blue); border: 1px solid #b0c8e8; transition: all 0.15s; }
+.pill-link:hover { background: #e8f0f8; }
+.pill-ai { background: var(--accent); color: white; font-weight: 600; margin-left: auto; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink); color: #555;
+  padding: 1.5rem 2rem; font-family: var(--mono); font-size: 0.63rem;
+  letter-spacing: 0.04em; display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  border-top: 2px solid #1a1a1a;
+}
+footer span { color: #444; }
+footer .footer-logo { font-family: var(--serif); font-size: 0.95rem; color: #888; letter-spacing: 0; }
+
+/* ── API STATUS ── */
+.api-status-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 16px; border-bottom: 1px solid var(--paper-3);
+  font-family: var(--mono);
+}
+.api-status-row:last-child { border-bottom: none; }
+.api-ok { color: #2e7a45; font-size: 0.63rem; }
+.api-err { color: #b02020; font-size: 0.63rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .feed-col { padding: 1.5rem 0; border-right: none; }
+  .sidebar { padding: 0 0 2rem; margin-top: 1rem; position: static; height: auto; overflow-y: visible; }
+  .masthead { padding: 0 1rem; }
+  .edition-tag { display: none; }
+  .modal { margin: 0; max-height: 95vh; }
+  .modal-title { font-size: 1.4rem; }
+  .modal-header, .modal-lead, .modal-analysis, .modal-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .modal-image-wrap { height: 200px; }
+  .container { padding: 0 1rem; }
+}
+@media (max-width: 480px) {
+  #live-clock { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-left">
+    <div class="logo" onclick="loadAll()" title="Haberleri Yenile">Dünya <span>Pusulası</span></div>
+    <div class="edition-tag">KÜRESEL HABER TERMİNALİ</div>
+	<button class="settings-btn" onclick="openSettings()" title="Ayarlar">⚙️</button>
+  </div>
+</header>
+
+<div class="ticker-bar">
+  <div class="ticker-inner" id="ticker-inner">
+    <span class="tick"><span class="tick-name">Yükleniyor</span><span class="tick-val">...</span></span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main-grid">
+
+    <div class="feed-col">
+      <div class="section-head-wrap">
+        <div class="section-head-top">
+          <h2>Son Dakika & Dünya</h2>
+          <span class="count" id="news-count">— haber</span>
+          <div class="live-badge" id="live-indicator-badge">
+            <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite;"></span>
+            CANLI
+          </div>
+        </div>
+        <div id="live-clock">-- -- ---- · --:--:--</div>
+      </div>
+      
+      <div id="news-feed">
+        <div class="news-card" style="animation:none;">
+          <div class="skeleton" style="width: 82px; height: 82px; flex-shrink: 0;"></div>
+          <div>
+            <div class="skeleton sk-title"></div>
+            <div class="skeleton sk-body"></div>
+            <div class="skeleton sk-body-2"></div>
+          </div>
+        </div>
+        <div class="news-card" style="animation:none; opacity:0.6;">
+          <div class="skeleton" style="width: 82px; height: 82px; flex-shrink: 0;"></div>
+          <div>
+            <div class="skeleton sk-title" style="width:65%;"></div>
+            <div class="skeleton sk-body"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      
+      <div class="panel" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="search-filter" style="font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Arama</label>
+          <input type="text" id="search-filter" placeholder="Haberlerde kelime ara...">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label for="channel-filter" style="font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Kanal Filtresi</label>
+          <select id="channel-filter">
+            <option value="">Tüm Kanallar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel('cal-body', 'cal-toggle-icon')" style="cursor: pointer; user-select: none;">
+          <span>Ekonomi Takvimi</span>
+          <span id="cal-toggle-icon" style="font-size: 0.6rem; color: var(--ink-4);">▶</span>
+        </div>
+        <div class="panel-body" id="cal-body" style="display: none;">
+          <div class="cal-item">
+            <div class="cal-dot" style="background:#999;"></div>
+            <div><div class="cal-title" style="color:var(--ink-3);">Yükleniyor...</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel('markets-body', 'mkt-toggle-icon')" style="cursor: pointer; user-select: none;">
+          <span>Canlı Piyasalar <span id="mkt-updated" style="color:#555; font-size:0.6rem; margin-left: 6px;">—</span></span>
+          <span id="mkt-toggle-icon" style="font-size: 0.6rem; color: var(--ink-4);">▶</span>
+        </div>
+        <div class="panel-body" id="markets-body" style="display: none;">
+          <div class="market-row"><span class="m-name">Yükleniyor...</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head" onclick="togglePanel('api-status-body', 'api-toggle-icon')" style="cursor: pointer; user-select: none;">
+          <span>Kaynak Durumu</span>
+          <span id="api-toggle-icon" style="font-size: 0.6rem; color: var(--ink-4);">▶</span>
+        </div>
+        <div class="panel-body" id="api-status-body" style="display: none;">
+          <div class="api-status-row"><span class="m-name">Kontrol ediliyor...</span></div>
+        </div>
+      </div>
+ 
+    </div>
+ 
+  </div>
+</div>
+ 
+<div class="modal-overlay" id="settings-modal" onclick="if(event.target === this) closeSettings()">
+  <div class="modal">
+    <div class="modal-fixed-area">
+      <div class="modal-header" style="padding: 1.2rem 1.5rem;">
+        <button class="modal-close-btn" onclick="closeSettings()" title="Kapat">✕</button>
+        <div class="modal-title" style="font-size: 1.5rem; margin:0;">Sistem Ayarları</div>
+      </div>
+    </div>
+    <div class="modal-scroll-area" style="padding: 0 1.5rem;">
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Otomatik Yenileme</div>
+          <div class="settings-desc">Haberleri ve piyasa verilerini arka planda günceller.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="setting-auto-refresh" onchange="saveSettings()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">Yenileme Sıklığı</div>
+          <div class="settings-desc">Ne kadar sürede bir güncellenecek?</div>
+        </div>
+        <select id="setting-interval" class="settings-select" onchange="saveSettings()">
+          <option value="3">3 Dakika</option>
+          <option value="5">5 Dakika</option>
+          <option value="15">15 Dakika</option>
+          <option value="30">30 Dakika</option>
+		  <option value="60">1 Saat</option>
+        </select>
+      </div>
+	  <div class="settings-row">
+        <div>
+          <div class="settings-label">Haber Dili</div>
+          <div class="settings-desc">Yabancı kaynaklar nasıl gösterilsin?</div>
+        </div>
+        <select id="lang-filter" class="settings-select">
+          <option value="tr">Türkçe (Çevirili)</option>
+          <option value="orig">Orijinal Dil</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal-box">
+    <div id="modal-inner"></div>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-logo">Dünya Pusulası</span>
+  <span id="footer-updated" style="color:#333;">—</span>
+  <span>ExchangeRate-API · Binance · GoldPrice · NYT · Guardian</span>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════
+   DÜNYA PUSULASI — GELİŞTİRİLMİŞ MİMARİ
+═══════════════════════════════════════════ */
+
+// ── ELECTRON CORS BYPASS ──
+const IS_ELECTRON = !!(window.electronAPI && window.electronAPI.isElectron);
+const CORS = IS_ELECTRON ? '' : 'https://api.codetabs.com/v1/proxy?quest=';
+
+// Electron'da Ana Süreç üzerinden CORS'suz fetch
+async function _electronFetch(url, timeoutMs) {
+  try {
+    const r = await window.electronAPI.nativeFetch(url, { timeout: timeoutMs });
+    return r;
+  } catch(e) { return { ok: false, text: '' }; }
+}
+
+const RSS_SOURCES = [
+  { name: 'BBC News',         url: 'https://feeds.bbci.co.uk/turkce/rss.xml',        lang: 'tr', cat: 'genel' },
+  { name: 'Deutsche Welle',   url: 'https://rss.dw.com/rdf/rss-tur-all',             lang: 'tr', cat: 'genel' },
+  { name: 'Euronews',         url: 'https://tr.euronews.com/rss',                    lang: 'tr', cat: 'genel' },
+  { name: 'Al Ain Türkçe',    url: 'https://tr.al-ain.com/feed',                     lang: 'tr', cat: 'genel' },
+  { name: 'Anadolu Ajansı',   url: 'https://www.aa.com.tr/tr/rss/default?cat=guncel',lang: 'tr', cat: 'genel' },
+  { name: 'Bloomberg HT',     url: 'https://www.bloomberght.com/rss',                lang: 'tr', cat: 'ekonomi' },
+  { name: 'NPR World News',   url: 'https://feeds.npr.org/1004/rss.xml',             lang: 'en', cat: 'genel' },
+  { name: 'Al Jazeera EN',    url: 'https://www.aljazeera.com/xml/rss/all.xml',       lang: 'en', cat: 'siyaset' },
+  { name: 'New York Times World',    url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', lang: 'en', cat: 'genel' },
+  { name: 'The Guardian World',      url: 'https://www.theguardian.com/world/rss',           lang: 'en', cat: 'genel' },
+  { name: 'Bağımsız Sinema',  url: 'https://www.bagimsizsinema.com/feed',             lang: 'tr', cat: 'kültür' },
+  { name: 'Bilim Günlüğü',    url: 'https://www.bilimgunlugu.com/feed/',              lang: 'tr', cat: 'teknoloji' },
+  { name: 'NouArt',           url: 'https://www.nouvart.net/feed/',                   lang: 'tr', cat: 'genel' },
+  { name: 'Edebiyat Burada',  url: 'https://edebiyatburada.com/feed/',                lang: 'tr', cat: 'genel' },
+  { name: 'Vesaire',          url: 'https://vesaire.press/feed/',                     lang: 'tr', cat: 'genel' },
+  { name: 'Kitap Haber',      url: 'https://www.kitaphaber.com.tr/feed',               lang: 'tr', cat: 'genel' },
+  { name: 'Bilimoloji',       url: 'https://www.bilimoloji.com/feed/',                lang: 'tr', cat: 'bilim' },
+  { name: 'Bilimup',          url: 'https://www.bilimup.com/rss.xml',                 fallback: ['https://r.jina.ai/http://www.bilimup.com/rss.xml'], lang: 'tr', cat: 'bilim' },
+  { name: 'Ekonomi Gazetesi', url: 'https://www.ekonomigazetesi.com/rss.xml',         lang: 'tr', cat: 'ekonomi' },
+  { name: 'Mynet Teknoloji',  url: 'http://www.mynet.com/haber/rss/kategori/teknoloji/', lang: 'tr', cat: 'teknoloji' },
+  { name: 'BBC Sport',        url: 'https://feeds.bbci.co.uk/sport/rss.xml',          lang: 'en', cat: 'spor' },
+  { name: 'Dünya Bizim',      url: 'https://www.dunyabizim.com/rss/kultur-sanat',     lang: 'tr', cat: 'kültür' }
+];
+
+let allNews = [];
+let filteredNews = [];
+let apiStatus = {};
+let newsIdCounter = 0;
+let translateQueue = [];
+let isTranslating = false;
+let selectedChannel = '';
+let selectedLangMode = 'tr';
+let searchQuery = '';
+let readNewsIds = new Set(JSON.parse(localStorage.getItem('pusula_read_news')) || []);
+
+let crawlQueue = [];
+let isCrawling = false;
+
+/* ── KALICI AYARLAR (LOCAL STORAGE) ── */
+let appSettings = {
+  autoRefresh: true,
+  refreshInterval: 60
+};
+let refreshTimerId = null;
+ 
+function initSettings() {
+  const saved = localStorage.getItem('pusula_settings');
+  if(saved) {
+    try { appSettings = JSON.parse(saved); } catch(e){}
+  }
+  document.getElementById('setting-auto-refresh').checked = appSettings.autoRefresh;
+  document.getElementById('setting-interval').value = appSettings.refreshInterval;
+  applyAutoRefresh();
+}
+ 
+function saveSettings() {
+  appSettings.autoRefresh = document.getElementById('setting-auto-refresh').checked;
+  appSettings.refreshInterval = parseInt(document.getElementById('setting-interval').value);
+  localStorage.setItem('pusula_settings', JSON.stringify(appSettings));
+  applyAutoRefresh();
+}
+ 
+function applyAutoRefresh() {
+  if(refreshTimerId) clearInterval(refreshTimerId);
+  const badge = document.getElementById('live-indicator-badge');
+  if(appSettings.autoRefresh) {
+    refreshTimerId = setInterval(loadAll, appSettings.refreshInterval * 60 * 1000);
+    if(badge) badge.style.display = 'flex';
+  } else {
+    if(badge) badge.style.display = 'none';
+  }
+}
+ 
+function openSettings() { document.getElementById('settings-modal').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-modal').classList.remove('open'); }
+
+/* ── METİN SESLENDİRME (TTS) MOTORU (HİBRİT: GOOGLE + YEREL) ── */
+let isSpeaking = false;
+let currentTtsBtn = null;
+let ttsAudioQueue = [];
+let currentAudio = null;
+
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+}
+
+function getSpeakerIcon() {
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
+}
+
+function getStopIcon() {
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"></rect></svg>`;
+}
+
+// 1. GOOGLE ÇEVİRİ MOTORU FONKSİYONLARI
+function chunkTextForGoogleTTS(text, maxLength = 180) {
+  const chunks = [];
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+
+  sentences.forEach(sentence => {
+    sentence = sentence.trim();
+    if (!sentence) return;
+    if (sentence.length <= maxLength) { chunks.push(sentence); } 
+    else {
+      const words = sentence.split(' ');
+      let currentChunk = '';
+      words.forEach(word => {
+        if ((currentChunk + word).length > maxLength) {
+          chunks.push(currentChunk.trim());
+          currentChunk = word + ' ';
+        } else { currentChunk += word + ' '; }
+      });
+      if (currentChunk.trim()) chunks.push(currentChunk.trim());
+    }
+  });
+  return chunks;
+}
+
+function playNextTtsChunk() {
+  if (ttsAudioQueue.length === 0) {
+    stopAnyTTS(); 
+    return;
+  }
+  const textChunk = ttsAudioQueue.shift();
+  const lang = selectedLangMode === 'orig' ? 'en' : 'tr';
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(textChunk)}`;
+  
+  currentAudio = new Audio(url);
+  currentAudio.playbackRate = 1.0; 
+  currentAudio.onended = playNextTtsChunk; 
+  currentAudio.onerror = () => { playNextTtsChunk(); };
+  currentAudio.play().catch(e => { stopAnyTTS(); });
+}
+
+// 2. YEREL SİSTEM MOTORU FONKSİYONLARI
+function getBestTurkishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  const trVoices = voices.filter(v => v.lang.includes('tr'));
+  if (trVoices.length === 0) return null;
+  let best = trVoices.find(v => v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google'));
+  if (!best) { best = trVoices.find(v => v.name.includes('Emel')) || trVoices.find(v => v.name.includes('Tolga')) || trVoices[0]; }
+  return best;
+}
+
+// 3. ANA TETİKLEYİCİ (HER İKİSİNİ YÖNETİR)
+function toggleTTS(elementId, btn, selectId) {
+  const textElement = document.getElementById(elementId);
+  if (!textElement) return;
+  const textToSpeak = textElement.innerText || textElement.textContent;
+
+  if (isSpeaking && currentTtsBtn === btn) {
+    stopAnyTTS();
+    return;
+  }
+
+  stopAnyTTS();
+  currentTtsBtn = btn;
+  isSpeaking = true;
+  btn.innerHTML = getStopIcon();
+
+  const engineSelect = document.getElementById(selectId);
+  const activeEngine = engineSelect ? engineSelect.value : 'google';
+
+  if (activeEngine === 'google') {
+    ttsAudioQueue = chunkTextForGoogleTTS(textToSpeak, 180);
+    playNextTtsChunk();
+  } else {
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    const bestVoice = getBestTurkishVoice();
+    if (bestVoice) {
+      utterance.voice = bestVoice;
+      if (!bestVoice.name.includes('Google') && !bestVoice.name.includes('Natural') && !bestVoice.name.includes('Online')) {
+          utterance.rate = 0.90;  
+          utterance.pitch = 0.85; 
+      } else {
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+      }
+    } else {
+      utterance.lang = selectedLangMode === 'orig' ? 'en-US' : 'tr-TR';
+    }
+    utterance.onend = () => stopAnyTTS();
+    utterance.onerror = () => stopAnyTTS();
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function stopAnyTTS() {
+  ttsAudioQueue = []; 
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  
+  isSpeaking = false;
+  if (currentTtsBtn) {
+    currentTtsBtn.innerHTML = getSpeakerIcon();
+    currentTtsBtn = null;
+  }
+}
+
+/* ── FİLTRE DROPDOWN VE ARAMA BAŞLATICILARI ── */
+function initFilters() {
+  const channelSelect = document.getElementById('channel-filter');
+  RSS_SOURCES.forEach(src => {
+    const option = document.createElement('option');
+    option.value = src.name;
+    option.textContent = src.name;
+    channelSelect.appendChild(option);
+  });
+
+  channelSelect.addEventListener('change', (e) => {
+    selectedChannel = e.target.value;
+    filterAndRenderNews();
+  });
+
+  const langSelect = document.getElementById('lang-filter');
+  langSelect.addEventListener('change', (e) => {
+    selectedLangMode = e.target.value;
+    filterAndRenderNews();
+  });
+
+  const searchInput = document.getElementById('search-filter');
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase();
+    filterAndRenderNews();
+  });
+}
+
+function filterAndRenderNews() {
+  filteredNews = allNews.filter(news => {
+    // 1. Kanal Filtresi
+    if (selectedChannel !== '' && news.source !== selectedChannel) return false;
+    
+    // 2. Metin (Arama) Filtresi
+    if (searchQuery.trim() !== '') {
+       const useOrig = selectedLangMode === 'orig';
+       const title = (useOrig ? news.title : (news.titleTR || news.title)) || '';
+       const desc = (useOrig ? news.description : (news.summaryTR || news.description)) || '';
+       const q = searchQuery.toLowerCase();
+       if (!title.toLowerCase().includes(q) && !desc.toLowerCase().includes(q)) {
+           return false;
+       }
+    }
+    return true;
+  });
+  
+  renderNews();
+  prioritizeVisibleItemsForCrawling();
+  prioritizeVisibleItemsForTranslation();
+}
+ 
+/* ── DİNAMİK ÖNCELİKLENDİRME ── */
+function prioritizeVisibleItemsForCrawling() {
+  const visibleMissing = filteredNews.filter(item => !item.bodyImage && item.link && !item.isScraped);
+  const others = crawlQueue.filter(item => !visibleMissing.includes(item));
+  crawlQueue = [...visibleMissing, ...others];
+  if (!isCrawling && crawlQueue.length > 0) processCrawlQueue();
+}
+ 
+function prioritizeVisibleItemsForTranslation() {
+  const visibleMissingTR = filteredNews.filter(item => item.lang === 'en' && !item.titleTR);
+  const visibleIds = visibleMissingTR.map(i => i.id);
+  const prioQueue = translateQueue.filter(q => visibleIds.includes(q.id));
+  const otherQueue = translateQueue.filter(q => !visibleIds.includes(q.id));
+  translateQueue = [...prioQueue, ...otherQueue];
+  if (!isTranslating && translateQueue.length > 0) processTranslationQueue();
+}
+
+/* ── SAAT VE TARİH ── */
+function updateClock() {
+  const now = new Date();
+  const p = n => String(n).padStart(2,'0');
+  
+  const options = { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' };
+  const dateStr = now.toLocaleDateString('tr-TR', options);
+  const timeStr = `${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())} UTC+3`;
+  
+  const clockEl = document.getElementById('live-clock');
+  if (clockEl) clockEl.textContent = `${dateStr} · ${timeStr}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function togglePanel(bodyId, iconId) {
+  const body = document.getElementById(bodyId);
+  const icon = document.getElementById(iconId);
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    icon.textContent = '▼';
+  } else {
+    body.style.display = 'none';
+    icon.textContent = '▶';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   EVRENSEL GÜVENLİ ASENKRON BAĞLANTI MOTORU
+═══════════════════════════════════════════ */
+async function safeFetchJson(url, timeoutMs = 7000) {
+  if (IS_ELECTRON) {
+    try {
+      const r = await _electronFetch(url, timeoutMs);
+      if (!r || !r.ok || !r.text) return null;
+      return JSON.parse(r.text);
+    } catch(e) { return null; }
+  }
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (e) {
+    clearTimeout(id);
+    return null;
+  }
+}
+
+async function safeFetchText(url, timeoutMs = 7000) {
+  if (IS_ELECTRON) {
+    try {
+      const r = await _electronFetch(url, timeoutMs);
+      if (!r || !r.text) return null;
+      return r.text;
+    } catch(e) { return null; }
+  }
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    if (!response.ok) return null;
+    return await response.text();
+  } catch (e) {
+    clearTimeout(id);
+    return null;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   GOOGLE TRANSLATE (Ücretsiz, Resmi Olmayan)
+═══════════════════════════════════════════ */
+async function googleTranslate(text, from = 'en', to = 'tr') {
+  if (!text || text.trim().length < 3) return text;
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+    const data = await safeFetchJson(url, 6000);
+    if (!data || !data[0]) return text;
+    return data[0].map(chunk => chunk[0]).filter(Boolean).join('');
+  } catch(e) {
+    return text;
+  }
+}
+
+async function processTranslationQueue() {
+  if (isTranslating || translateQueue.length === 0) return;
+  isTranslating = true;
+  const entry = translateQueue.shift();
+  try {
+    const ni = allNews.find(n => n.id === entry.id);
+    if (ni) {
+      const [tTitle, tDesc] = await Promise.all([
+        googleTranslate(entry.item.title, 'en', 'tr'),
+        entry.item.description ? googleTranslate(entry.item.description, 'en', 'tr') : Promise.resolve('')
+      ]);
+      if (tTitle && tTitle.trim().length > 0) ni.titleTR = tTitle;
+      if (tDesc && tDesc.trim().length > 0) ni.summaryTR = tDesc;
+      const el = document.querySelector(`[data-newsid="${entry.id}"]`);
+      if (el) {
+        const titleEl = el.querySelector('.card-title');
+        const bodyEl  = el.querySelector('.card-body');
+        const transEl = el.querySelector('.translating-pill');
+        if (selectedLangMode !== 'orig') {
+          if (titleEl && ni.titleTR) { titleEl.textContent = ni.titleTR; titleEl.style.opacity = '1'; }
+          if (bodyEl && ni.summaryTR) { bodyEl.textContent = ni.summaryTR; bodyEl.style.opacity = '1'; }
+          if (transEl) transEl.remove();
+        } else {
+          if (transEl) transEl.remove();
+        }
+      }
+    }
+  } catch(e) {
+    console.warn('Ana sayfa haber çeviri hatası:', e.message);
+  }
+  isTranslating = false;
+  if (translateQueue.length > 0) setTimeout(processTranslationQueue, 300);
+}
+
+async function generateDetailedAnalysis(item) {
+  const title = item.titleTR || item.title;
+  const sourceText = item.rawFullText || '';
+  if (!sourceText || sourceText.trim().length < 80) return "";
+  const prompt = `Sen profesyonel bir haber terminali veri rafine motorusun. Aşağıdaki haber metnini incele. Dışarıdan TEK BİR KELİME yorum, tahmin veya süsleme eklemeden, metindeki tüm somut gerçekleri tam ve nizamî olarak özetle.
+HABER BAŞLIĞI: ${title}
+KAYNAK METİN: ${sourceText}
+AJANS: ${item.source}
+KURALLAR:
+- Metindeki tüm önemli sayıları (can kaybı, işçi sayısı, tarihler), kurum/maden isimlerini ve resmi kararları eksiksiz dahil et.
+- Bilgileri "Olay ve Konum", "Mevcut Durum ve Gelişmeler", "Tarihsel Arka Plan" gibi net, yorumsuz paragraflar halinde yapılandır.
+- Doğrudan konuya gir, giriş/sonuç kalıpları kullanma.
+- Çıktıyı sadece <p>...</p> etiketleri içinde temiz paragraflar olarak ver.`;
+  try {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 12000);
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      }),
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    if (!resp.ok) throw new Error('API aktif değil');
+    const data = await resp.json();
+    return data.content?.[0]?.text || await generateFallbackAnalysis(item);
+  } catch(e) {
+    return await generateFallbackAnalysis(item);
+  }
+}
+
+async function generateFallbackAnalysis(item) {
+  let mainContent = item.rawFullText || item.description || '';
+  if (!mainContent || mainContent.trim().length < 10) return "";
+  if (selectedLangMode !== 'orig' && item.lang === 'en' && mainContent) {
+    try { mainContent = await googleTranslate(mainContent, 'en', 'tr'); } catch(e) {}
+  }
+  return mainContent.split(/\n+/).map(p => p.trim()).filter(p => p.length > 0).map(p => `<p>${p}</p>`).join('');
+}
+
+async function openModal(item) {
+  // Okundu Olarak İşaretle ve Kaydet
+  if (!readNewsIds.has(item.link)) {
+    readNewsIds.add(item.link);
+    // Boyut çok büyümesin diye son 500 haberi tut
+    if (readNewsIds.size > 500) {
+        const arr = Array.from(readNewsIds);
+        readNewsIds = new Set(arr.slice(arr.length - 500));
+    }
+    localStorage.setItem('pusula_read_news', JSON.stringify(Array.from(readNewsIds)));
+    
+    // Anında UI güncellemesi yap
+    const cardEl = document.querySelector(`[data-newsid="${item.id}"] .card-indicator-wrapper`);
+    if (cardEl && !cardEl.querySelector('.read-tick-icon')) {
+      cardEl.innerHTML += `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="read-tick-icon"><polyline points="18 6 7 17 2 12"></polyline><polyline points="22 10 11 21 6 16"></polyline></svg>`;
+    }
+  }
+
+  const useOrig = selectedLangMode === 'orig';
+  const title = useOrig ? item.title : (item.titleTR || item.title);
+  const summary = useOrig ? (item.description || '') : (item.summaryTR || item.description || '');
+  const [priLabel, priClass] = priorityLabel(item.priority);
+  const [catLbl, catClass] = catLabel(item.cat2);
+  const date = new Date(item.ts);
+  const dateStr = date.toLocaleDateString('tr-TR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const timeStr = date.toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' });
+  const inner = document.getElementById('modal-inner');
+  
+  let badgesHtml = `<span class="priority-badge ${priClass}">${priLabel}</span>`;
+  if (priLabel !== catLbl) {
+    badgesHtml += ` <span class="priority-badge ${catClass}">${catLbl}</span>`;
+  }
+
+  inner.innerHTML = `
+    <div class="modal-fixed-area">
+      <div class="modal-header">
+        <button class="modal-close-btn" onclick="closeModalDirect()" title="Kapat">✕</button>
+        <div class="modal-cat-row">
+          ${badgesHtml}
+        </div>
+        <div class="modal-title">${title}</div>
+        <div class="modal-meta">
+          <span>📡 ${item.source}</span>
+          <span class="modal-meta-sep">·</span>
+          <span>📅 ${dateStr}</span>
+          <span class="modal-meta-sep">·</span>
+          <span>🕐 ${timeStr}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-scroll-area">
+      ${summary ? `
+      <div class="modal-lead">
+        <div class="modal-lead-text" id="modal-lead-content">${summary}</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <select id="tts-engine-lead" class="modal-tts-select" style="display:none;" onchange="stopAnyTTS()">
+                <option value="google">Google Ses</option>
+                <option value="local">Sistem Sesi</option>
+            </select>
+            <button class="tts-btn" id="tts-lead-btn" onclick="toggleTTS('modal-lead-content', this, 'tts-engine-lead')" style="display:none;" title="Özeti Seslendir">${getSpeakerIcon()}</button>
+        </div>
+      </div>` : ''}
+      <div id="modal-img-wrap"></div>
+      <div class="modal-analysis" id="modal-analysis-section">
+        <div class="modal-analysis-head">
+          <span>⊕</span> ${useOrig ? 'Terminal Analysis' : 'Yapay Zeka Terminal Analizi'}
+          <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+              <select id="tts-engine-ai" class="modal-tts-select" style="display:none;" onchange="stopAnyTTS()">
+                  <option value="google">Google Ses</option>
+                  <option value="local">Sistem Sesi</option>
+              </select>
+              <button class="tts-btn" id="tts-ai-btn" onclick="toggleTTS('modal-ai-content', this, 'tts-engine-ai')" style="display:none;" title="Analizi Seslendir">${getSpeakerIcon()}</button>
+          </div>
+        </div>
+        <div id="modal-ai-content">
+          <div class="ai-loader">
+            <div class="ai-loader-ring"></div>
+            <div class="ai-loader-text">${useOrig ? 'Extracting text...' : 'Yapay zeka aracılığıyla<br>haber özeti çıkarılıyor...'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-src-pill pill-dark">📰 ${item.source}</span>
+      ${item.link ? `<a href="${item.link}" target="_blank" rel="noopener" class="modal-src-pill pill-link">→ Orijinal Habere Git</a>` : ''}
+      <span class="modal-src-pill pill-ai">${useOrig ? '✦ Terminal Core' : '✦ AI Destekli'}</span>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+  await scrapFullArticleResources(item);
+  const wrap = document.getElementById('modal-img-wrap');
+  if (wrap) {
+    if (item.bodyImage) injectImage(wrap, item.bodyImage);
+    else if (item.image) injectImage(wrap, item.image);
+    else if (item.ogImage) injectImage(wrap, item.ogImage);
+  }
+  
+  if (useOrig) {
+    generateFallbackAnalysis(item).then(html => {
+      renderAnalysis(html, item);
+    });
+  } else {
+    if (item.detailTR) renderAnalysis(item.detailTR, item);
+    else {
+      generateDetailedAnalysis(item).then(html => {
+        item.detailTR = html;
+        renderAnalysis(html, item);
+      });
+    }
+  }
+}
+
+async function scrapFullArticleResources(item) {
+  if (item.isScraped || !item.link) return;
+  try {
+    const articleUrl = IS_ELECTRON ? item.link : (CORS + item.link);
+    const html = await safeFetchText(articleUrl, 12000);
+    if (!html || html.length < 500) {
+      if (!item.rawFullText) item.rawFullText = item.description || '';
+      item.isScraped = true;
+      return;
+    }
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    
+    // Geniş haber gövdesi seçicileri (Al Jazeera, BBC, Guardian, NYT, Reuters, Türkçe siteler)
+    let pElements = [...doc.querySelectorAll([
+      'article p', '.article-body p', '.story-body p', '.article__body p',
+      '.entry-content p', '.post-content p', '.story p', 'main article p',
+      '.wysiwyg p', '.article-p-wrapper p', '[class*="wysiwyg"] p',           // Al Jazeera
+      '[class*="ssrcss"] p', '[data-component="text-block"] p',               // BBC
+      '[class*="dcr-"] p', '.content__article-body p',                        // Guardian
+      '.StoryBodyCompanionColumn p', '.article-body-content p',               // NYT
+      '[class*="article-body"] p',                                            // Reuters
+      '.body-content p', '.fence-body p',                                     // Bloomberg
+      '.detay-metin p', '.detay-icerik p', '.haber-detay p', '.haberMetni p', // Türkçe
+      '.haber-icerik p', '.news-content p', '.icerik p', '.yazi-icerik p',
+      '.live-blog-text p', '.post p', '.text p',
+    ].join(', '))];
+
+    // Hiçbir özel sınıfa ulaşılamazsa genel tarama
+    if (pElements.length < 3) pElements = [...doc.querySelectorAll('main p, #content p, .content p')];
+    // Son çare
+    if (pElements.length < 3) pElements = [...doc.querySelectorAll('p')];
+    
+    const textBlocks = pElements
+      .flatMap(p => p.textContent.split('\n'))
+      .map(t => t.trim())
+      .filter(t => {
+        const lower = t.toLowerCase();
+        if (lower === 'ekonomi gazetesi' || lower === 'şehir' || lower === '*' || lower === '') return false;
+        return t.length > 45 && 
+               !lower.includes('cookie') && 
+               !lower.includes('javascript') && 
+               !lower.includes('tıklayın') && 
+               !lower.includes('önyargısız') && 
+               !lower.includes('sansürsüz') && 
+               !lower.includes('no comment') && 
+               !lower.includes('iklim verilerini sunuyoruz') && 
+               !lower.includes('abone ol') && 
+               !lower.includes('tüm hakları saklıdır') &&
+               !lower.includes('sign in') && 
+               !lower.includes('subscribe') && 
+               !lower.includes('privacy policy')
+			   !lower.includes('cookie') && 
+               !lower.includes('javascript') && 
+               !lower.includes('subscribe') && 
+               !lower.includes('privacy policy') &&
+               !lower.includes('kutsal topraklardaki hacılar') && 
+			   !lower.includes('ikonuna tıklayarak dilediğin özelliği favorilerine ekleyebilirsin.') && 
+			   !lower.includes("Copyright © MYNET A.Ş. Telif Hakları MYNET A.Ş.'ye Aittir.") && 
+			   !lower.includes('Favorilerime ekle () ikonuna tıklayarak dilediğin özelliği favorilerine ekleyebilirsin.') && 
+			   !lower.includes('Haber | Canlı Skor | Canlı Borsa | Astroloji | Namaz Vakitleri | Mynet AI') && 
+               !lower.includes("mina'da şeytan");
+      });
+
+    const uniqueBlocks = [...new Set(textBlocks)];
+    const hasValidText = uniqueBlocks.length > 0 && uniqueBlocks.join('').trim().length > 120;
+
+    if (hasValidText) {
+      let foundImg = null;
+      const ogMeta = doc.querySelector('meta[property="og:image"], meta[name="twitter:image"]');
+      if (ogMeta && ogMeta.getAttribute('content')?.startsWith('http')) {
+        foundImg = ogMeta.getAttribute('content');
+      }
+      
+      if (!foundImg) {
+        const sidebars = doc.querySelectorAll('.most-popular, .trending, sidebar, #sidebar, .aside, aside, .wsj-headline-list');
+        sidebars.forEach(s => s.remove());
+        
+        let bodyImgEl = doc.querySelector('article img, main img, .story img, .media-placeholder img');
+        if (bodyImgEl) {
+          let srcAttr = bodyImgEl.getAttribute('src') || bodyImgEl.getAttribute('data-src') || bodyImgEl.getAttribute('srcset')?.split(' ')[0];
+          if (srcAttr && srcAttr.startsWith('http') && !srcAttr.includes('logo') && !srcAttr.includes('icon') && !srcAttr.includes('avatar')) {
+            foundImg = srcAttr;
+          }
+        }
+      }
+      
+      if (foundImg) {
+        item.bodyImage = foundImg;
+        updateCardThumbnail(item);
+      }
+      item.rawFullText = uniqueBlocks.slice(0, 15).join('\n\n');
+    } else {
+      item.rawFullText = item.description || '';
+    }
+    
+    item.isScraped = true;
+  } catch(e) {
+    console.error('Kaynak kazınamadı:', e);
+    if (!item.rawFullText) item.rawFullText = item.description || '';
+    item.isScraped = true;
+  }
+}
+
+function renderAnalysis(html, item) {
+  const container = document.getElementById('modal-ai-content');
+  const section = document.getElementById('modal-analysis-section');
+  const aiTtsBtn = document.getElementById('tts-ai-btn');
+  const leadTtsBtn = document.getElementById('tts-lead-btn');
+  const aiSelect = document.getElementById('tts-engine-ai');
+  const leadSelect = document.getElementById('tts-engine-lead');
+
+  if (!container || !section) return;
+  
+  const cleanHtmlText    = html ? html.replace(/<[^>]*>/g, '').trim() : '';
+  const cleanSummaryText = item ? (item.summaryTR || item.description || '').replace(/<[^>]*>/g, '').trim() : '';
+  
+  // Gerçekten içerik yoksa göster — ama sadece tamamen boşsa, duplikat değilse
+  const hasNoContent = !html || html.trim() === '' || cleanHtmlText.length < 30;
+  // Duplikat kontrolü: sadece birebir aynıysa VE içerik çok kısaysa kısıtlanmış say
+  const isDuplicate  = cleanHtmlText.length > 0 &&
+                       cleanHtmlText === cleanSummaryText &&
+                       cleanHtmlText.length < 200;
+
+  if (hasNoContent || isDuplicate) {
+    section.style.display = 'block';
+    // Kısıtlama mesajı yerine: RSS özetini analiz bölümünde göster
+    const fallbackContent = cleanSummaryText || '';
+    if (fallbackContent.length > 30) {
+      container.innerHTML = `<div class="modal-body-text">${
+        fallbackContent.split(/\n+/).filter(p => p.trim().length > 0).map(p => `<p>${p}</p>`).join('')
+      }</div>`;
+      if(aiTtsBtn)  { aiTtsBtn.style.display  = 'flex'; if(aiSelect)  aiSelect.style.display  = 'block'; }
+      if(leadTtsBtn){ leadTtsBtn.style.display = 'none'; if(leadSelect)leadSelect.style.display= 'none'; }
+    } else {
+      container.innerHTML = `
+        <div class="modal-body-text" style="color: var(--ink-3); font-style: italic; font-size: 0.9rem; text-align: center; padding: 2rem 1rem; line-height: 1.6;">
+          Makale içeriğine ulaşılamadı. Orijinal habere aşağıdaki bağlantıdan erişebilirsiniz.
+        </div>`;
+      if(leadTtsBtn){ leadTtsBtn.style.display = 'flex'; if(leadSelect)leadSelect.style.display = 'block'; }
+      if(aiTtsBtn)  { aiTtsBtn.style.display   = 'none'; if(aiSelect)  aiSelect.style.display   = 'none'; }
+    }
+    return;
+  }
+  
+  section.style.display = 'block';
+  container.innerHTML = `<div class="modal-body-text">${html}</div>`;
+  
+  if(aiTtsBtn)  { aiTtsBtn.style.display  = 'flex'; if(aiSelect)  aiSelect.style.display  = 'block'; }
+  if(leadTtsBtn){ leadTtsBtn.style.display = 'none'; if(leadSelect)leadSelect.style.display = 'none'; }
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() { 
+  stopAnyTTS();
+  document.getElementById('modal-overlay').classList.remove('open'); 
+}
+
+async function loadModalImage(item) {
+  const wrap = document.getElementById('modal-img-wrap');
+  if (!wrap) return;
+  if (item.bodyImage) { injectImage(wrap, item.bodyImage); return; }
+  if (item.image) { injectImage(wrap, item.image); return; }
+  if (item.ogImage) { injectImage(wrap, item.ogImage); return; }
+}
+
+function injectImage(wrap, src) {
+  if (/\.(mp3|mp4|wav|m4a|ogg|webm)$/i.test(src)) return;
+  const img = document.createElement('img');
+  img.src = src;
+  img.className = 'modal-image';
+  img.alt = 'Haber görseli';
+  img.style.cssText = 'opacity:0;transition:opacity 0.45s;';
+  img.onload = function() { 
+    if (this.naturalWidth > 20 && this.naturalHeight > 20) {
+      wrap.classList.add('modal-image-wrap'); 
+      img.style.opacity = '1'; 
+    } else { wrap.innerHTML = ''; }
+  };
+  img.onerror = () => { wrap.innerHTML = ''; };
+  wrap.appendChild(img);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+
+function updateCardThumbnail(item) {
+  const sideThumb = document.querySelector(`[data-newsid="${item.id}"] .card-thumb-wrap`);
+  if (sideThumb) {
+    const imgUrl = item.bodyImage || item.image || item.ogImage;
+    if (imgUrl && !/\.(mp3|mp4|wav|m4a|ogg|webm)$/i.test(imgUrl)) {
+      const initialLetters = item.source.substring(0, 2).toUpperCase();
+      sideThumb.innerHTML = `
+        <img src="${imgUrl}" class="card-thumb-img" alt="Haber" onload="if(this.naturalWidth<20){this.style.display='none';this.nextElementSibling.style.display='flex';}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span class="card-thumb-placeholder" style="display:none;">${initialLetters}</span>
+      `;
+    }
+  }
+}
+
+async function processCrawlQueue() {
+  if (isCrawling || crawlQueue.length === 0) return;
+  isCrawling = true;
+  const item = crawlQueue.shift();
+  if (!item.bodyImage && item.link) {
+    try {
+      const crawlUrl = IS_ELECTRON ? item.link : (CORS + item.link);
+      const html = await safeFetchText(crawlUrl, 5000);
+      if (html) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const titleLower = doc.title.toLowerCase();
+        const isPaywallOrRedirect = titleLower.includes('subscribe') || titleLower.includes('login') || titleLower.includes('sign in');
+        
+        if (!isPaywallOrRedirect) {
+          let foundImg = null;
+          const ogMeta = doc.querySelector('meta[property="og:image"], meta[name="twitter:image"]');
+          if (ogMeta && ogMeta.getAttribute('content')?.startsWith('http')) {
+            foundImg = ogMeta.getAttribute('content');
+          }
+          
+          if (!foundImg) {
+            let bodyImgEl = doc.querySelector('article img, main img, .story img');
+            if (bodyImgEl) {
+              let srcAttr = bodyImgEl.getAttribute('src') || bodyImgEl.getAttribute('data-src') || bodyImgEl.getAttribute('srcset')?.split(' ')[0];
+              if (srcAttr && srcAttr.startsWith('http')) {
+                foundImg = srcAttr;
+              }
+            }
+          }
+          
+          if (foundImg) {
+            item.bodyImage = foundImg;
+            updateCardThumbnail(item);
+          }
+        }
+      }
+    } catch(e) {}
+  }
+  isCrawling = false;
+  if (crawlQueue.length > 0) setTimeout(processCrawlQueue, 1500);
+}
+
+async function fetchRSS(src) {
+  let results = [];
+  let success = false;
+  try {
+    const jsonUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(src.url)}`;
+    const data = await safeFetchJson(jsonUrl, 6000);
+    if (data && data.status === 'ok' && data.items && data.items.length > 0) {
+      data.items.slice(0, 20).forEach(item => {
+        const title = item.title?.trim() || '';
+        const link = item.link?.trim() || '';
+        if (!title || title.length < 5) return;
+        const rawDesc = item.content || item.description || '';
+        const cleanDesc = rawDesc.replace(/<[^>]*>/g,'').trim().slice(0, 4000);
+        let imgUrl = item.thumbnail || (item.enclosure && item.enclosure.link) || '';
+        if (!imgUrl) {
+           const imgMatch = rawDesc.match(/<img[^>]+src="([^">]+)"/i);
+           if (imgMatch) imgUrl = imgMatch[1];
+        }
+        if (/\.(mp3|mp4|wav|m4a|ogg|webm)$/i.test(imgUrl)) imgUrl = '';
+        const ts = item.pubDate ? new Date(item.pubDate.replace(/-/g, '/')).getTime() : Date.now();
+        results.push({ title, description: cleanDesc, image: imgUrl, link, ts: isNaN(ts) ? Date.now() : ts, lang: src.lang, source: src.name, cat: src.cat });
+      });
+      success = true;
+    }
+  } catch (e) {}
+
+  if (!success) {
+    let proxyList = [];
+    // Özel fallbackler varsa en başa ekle (öncelikli denensin)
+    if (src.fallback && Array.isArray(src.fallback)) {
+      proxyList.push(...src.fallback.map(url => ({ url: url, isCustom: true })));
+    }
+    
+    const defaultProxies = IS_ELECTRON
+      ? [''] // Electron: direkt bağlan, proxy yok
+      : ['https://api.codetabs.com/v1/proxy?quest=', 'https://api.allorigins.win/raw?url=', 'https://corsproxy.io/?'];
+      
+    proxyList.push(...defaultProxies.map(p => ({ proxy: p, isCustom: false })));
+
+    for (const item of proxyList) {
+      try {
+        let targetUrl;
+        if (item.isCustom) {
+          targetUrl = item.url;
+        } else {
+          if (!item.proxy) {
+            targetUrl = src.url; // Electron: direkt URL
+          } else if (item.proxy.includes('allorigins') || item.proxy.includes('codetabs')) {
+            targetUrl = item.proxy + encodeURIComponent(src.url);
+          } else {
+            targetUrl = item.proxy + src.url;
+          }
+        }
+        
+        const text = await safeFetchText(targetUrl, 6000);
+        if (!text || text.trim().length < 200 || text.trim().toLowerCase().startsWith('<!doctype html>')) continue;
+        const doc = new DOMParser().parseFromString(text, 'text/xml');
+        if (doc.querySelector('parsererror')) continue;
+        const items = [...doc.querySelectorAll('item, entry')];
+        if (items.length > 0) {
+          items.slice(0, 20).forEach(item => {
+            const title = item.querySelector('title')?.textContent?.trim() || '';
+            const pub = item.querySelector('pubDate, updated, published')?.textContent || '';
+            let link = item.querySelector('link')?.textContent?.trim() || '';
+            if (!link && item.querySelector('link')) { link = item.querySelector('link').getAttribute('href') || ''; }
+            if (!title || title.length < 5) return;
+            const rawDesc = item.querySelector('description, summary, content')?.textContent || '';
+            const cleanDesc = rawDesc.replace(/<[^>]*>/g,'').trim().slice(0, 4000);
+            let imgUrl = '';
+            const innerStr = item.innerHTML;
+            const mediaMatch = innerStr.match(/<media:content[^>]+url="([^">]+)"/i) || innerStr.match(/url="([^">]+\.(?:jpg|jpeg|png|webp|gif)[^">]*)"/i);
+            const encMatch = innerStr.match(/<enclosure[^>]+url="([^">]+)"/i);
+            const imgTagMatch = innerStr.match(/<img[^>]+src="([^">]+)"/i);
+            if (mediaMatch) imgUrl = mediaMatch[1];
+            else if (encMatch) imgUrl = encMatch[1];
+            else if (imgTagMatch) imgUrl = imgTagMatch[1];
+            if (/\.(mp3|mp4|wav|m4a|ogg|webm)$/i.test(imgUrl)) imgUrl = '';
+            const ts = pub ? new Date(pub).getTime() : Date.now();
+            results.push({ title, description: cleanDesc, image: imgUrl, link, ts: isNaN(ts) ? Date.now() : ts, lang: src.lang, source: src.name, cat: src.cat });
+          });
+          success = true;
+          break; 
+        }
+      } catch (e) {}
+    }
+  }
+  if (!success || results.length === 0) { apiStatus[src.name] = { ok: false, error: 'Ağ Engeli' }; return []; }
+  apiStatus[src.name] = { ok: true, count: results.length };
+  return results;
+}
+
+function detectPriority(title) {
+  if (/war|savaş|nükleer|nuclear|breaking|son dakika|attack|saldır|killed|crisis|kriz|explosion|patlama|ceasefire|ateşkes|coup|darbe/i.test(title)) return 'breaking';
+  if (/fed|ecb|tcmb|rate|faiz|gdp|inflation|enflasyon|tariff|sanction|yaptırım|summit|oil|petrol|gold|altın|market|borsa/i.test(title)) return 'high';
+  return 'normal';
+}
+
+function detectCat(title, cat) {
+  const t = title.toLowerCase();
+  if (/economy|economic|fed|market|trade|gdp|inflation|bank|nasdaq|dow|borsa|faiz|enflasyon|kripto|crypto|hisse|ekonomi|yatırım|dolar|euro/i.test(t)) return 'eco';
+  if (/war|savaş|military|asker|nato|sanctions|diplomacy|summit|iran|ukraine|israel|china|russia|filistin|gazze|pentagon|füze|çatışma|çatış/i.test(t)) return 'geo';
+  if (/seçim|election|parti|başkan|cumhurbaşkanı|meclis|hükümet|bakan|congress|trump|siyaset|politika|oy|sandık|anayasa/i.test(t)) return 'pol';
+  if (/tech|teknoloji|\bai\b|yapay zek|cyber|hacker|yazılım|software|uzay|space|nasa|spacex|apple|google|microsoft|çip|algoritma/i.test(t)) return 'tech';
+  if (/sağlık|health|ebola|covid|virüs|virus|aşı|vaccine|hastane|hospital|who|ilaç|kanser|salgın/i.test(t)) return 'health';
+  if (/iklim|climate|çevre|enerji|energy|karbon|deprem|earthquake|sel|flood|doğa|petrol|doğalgaz/i.test(t)) return 'env';
+  if (/spor|sports|futbol|basketbol|nba|fifa|uefa|şampiyon|olimpiyat|turnuva|maç|kupa/i.test(t)) return 'sport';
+  if (/sinema|film|vizyon|hollywood|tiyatro|box office|oyuncu|yönetmen|oscar/i.test(t)) return 'cinema';
+  if (/bilim|science|keşif|araştırma|genetik|laboratuvar|fizik|kimya|biyoloji|profesör|makale|evrim/i.test(t)) return 'sci';
+  if (/kültür|sanat|müzik|festival|edebiyat|concert|konser|kitap|yazar/i.test(t)) return 'culture';
+  if (/toplum|aile|göçmen|mülteci|eğitim|okul|cinayet|polis|mahkeme|dava/i.test(t)) return 'society';
+  
+  // Orijinal kaynak kategorisi eşleştirmeleri
+  if (cat === 'siyaset') return 'pol';
+  if (cat === 'ekonomi') return 'eco';
+  if (cat === 'teknoloji' || cat === 'Teknoloji') return 'tech';
+  if (cat === 'kültür' || cat === 'kültür-sanat') return 'culture';
+  if (cat === 'spor' || cat === 'Spor') return 'sport';
+  
+  return 'genel';
+}
+
+function priorityLabel(p) {
+  if (p === 'breaking') return ['SON DAKİKA', 'p-breaking'];
+  if (p === 'high')     return ['ÖNEMLİ', 'p-high'];
+  return ['GENEL', 'p-normal'];
+}
+
+function catLabel(c) {
+  const map = {
+    eco: ['EKONOMİ','p-eco'], geo: ['JEOPOLİTİK','p-geo'], pol: ['SİYASET','p-pol'],
+    tech: ['TEKNOLOJİ','p-tech'], health: ['SAĞLIK','p-health'], env: ['ÇEVRE','p-env'],
+    sport: ['SPOR','p-sport'], culture: ['KÜLTÜR','p-culture'], society: ['TOPLUM','p-society'],
+    cinema: ['SİNEMA','p-cinema'], sci: ['BİLİM','p-sci'],
+    genel: ['GENEL','p-genel']
+  };
+  return map[c] || ['GENEL','p-genel'];
+}
+
+function renderNews() {
+  const feed = document.getElementById('news-feed');
+  const sorted = [...filteredNews].sort((a,b) => {
+      const pa = ['breaking','high','normal'].indexOf(a.priority);
+      const pb = ['breaking','high','normal'].indexOf(b.priority);
+      if (pa !== pb) return pa - pb;
+      return b.ts - a.ts;
+    });
+  document.getElementById('news-count').textContent = `${sorted.length} haber`;
+  feed.innerHTML = '';
+  sorted.forEach((item, idx) => {
+    const [priLabel, priClass] = priorityLabel(item.priority);
+    const [catLbl, catClass] = catLabel(item.cat2);
+    const d = new Date(item.ts);
+    const timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    
+    const useOrig = selectedLangMode === 'orig';
+    const displayTitle   = useOrig ? item.title : (item.titleTR || item.title);
+    const displaySummary = useOrig ? (item.description || '') : (item.summaryTR || item.description || '');
+    const needsTranslation = !useOrig && item.lang === 'en' && !item.titleTR;
+    
+    let thumbContent = '';
+    const initialLetters = item.source.substring(0, 2).toUpperCase();
+    
+    const currentImg = item.bodyImage || item.image || item.ogImage;
+    if (currentImg && currentImg.startsWith('http') && !/\.(mp3|mp4|wav|m4a|ogg|webm)$/i.test(currentImg)) {
+      thumbContent = `<img src="${currentImg}" class="card-thumb-img" alt="Haber" onload="if(this.naturalWidth<20){this.style.display='none';this.nextElementSibling.style.display='flex';}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                      <span class="card-thumb-placeholder" style="display:none;">${initialLetters}</span>`;
+    } else { thumbContent = `<span class="card-thumb-placeholder">${initialLetters}</span>`; }
+    
+    let badgesHtml = `<span class="priority-badge ${priClass}">${priLabel}</span>`;
+    if (priLabel !== catLbl) {
+      badgesHtml += ` <span class="priority-badge ${catClass}">${catLbl}</span>`;
+    }
+
+    const isRead = readNewsIds.has(item.link);
+    const readIcon = isRead ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="read-tick-icon"><polyline points="18 6 7 17 2 12"></polyline><polyline points="22 10 11 21 6 16"></polyline></svg>` : '';
+
+    const card = document.createElement('div');
+    card.className = 'news-card';
+    card.dataset.newsid = item.id;
+    card.style.animationDelay = `${Math.min(idx * 35, 600)}ms`;
+    card.onclick = () => openModal(item);
+    card.innerHTML = `
+      <div class="card-thumb-wrap">${thumbContent}</div>
+      <div>
+        <div class="card-meta">
+          ${badgesHtml}
+          <span class="src-pill" style="border:none; padding:0; background:transparent; font-weight:600; color:var(--ink-3);">${item.source}</span>
+          <span class="card-time">${timeStr}</span>
+          ${needsTranslation ? '<span class="translating-pill">⟳ çevriliyor</span>' : ''}
+        </div>
+        <div class="card-title" style="opacity:${needsTranslation?'0.65':'1'}">${displayTitle}</div>
+        <div class="card-body" style="opacity:${needsTranslation?'0.5':'1'}">${displaySummary}</div>
+      </div>
+      <div class="card-indicator-wrapper">
+        <div class="card-indicator">${item.priority==='breaking'?'🔴':item.priority==='high'?'🟠':'⚪'}</div>
+        ${readIcon}
+      </div>
+    `;
+    feed.appendChild(card);
+  });
+}
+
+function renderApiStatus() {
+  const entries = Object.entries(apiStatus);
+  if (!entries.length) return;
+  document.getElementById('api-status-body').innerHTML = entries.map(([name, s]) => `
+    <div class="api-status-row">
+      <span class="m-name" style="font-size:0.67rem;">${name}</span>
+      <span class="${s.ok ? 'api-ok' : 'api-err'}">${s.ok ? `✓ ${s.count ?? ''}` : '✗ hata'}</span>
+    </div>
+  `).join('');
+}
+
+function buildTicker(rates, btc, goldPrice) {
+  const usd = rates?.TRY;
+  const eur = usd && rates?.EUR ? (usd/rates.EUR) : null;
+  const gbp = usd && rates?.GBP ? (usd/rates.GBP) : null;
+  const chf = usd && rates?.CHF ? (usd/rates.CHF) : null;
+  const ticks = [
+    ['USD/TRY',  usd       ? usd.toFixed(3)  : '—', null],
+    ['EUR/TRY',  eur       ? eur.toFixed(3)  : '—', null],
+    ['GBP/TRY',  gbp       ? gbp.toFixed(3)  : '—', null],
+    ['CHF/TRY',  chf       ? chf.toFixed(3)  : '—', null],
+    ['BTC/USD',  btc       ? '$'+Math.round(btc).toLocaleString() : '—', true],
+    ['ALTIN/ONS', goldPrice ? '$'+goldPrice.toFixed(1) : '—', true],
+  ];
+  let html = ticks.filter(([,v]) => v && v !== '—').map(([n,v,up]) =>
+      `<span class="tick"><span class="tick-name">${n}</span><span class="tick-val">${v}</span>${up !== null ? `<span class="${up?'tick-up':'tick-dn'}">${up?'▲':'▼'}</span>` : ''}</span>`
+    ).join('<span class="tick-sep"> ◆ </span>');
+  document.getElementById('ticker-inner').innerHTML = html + '<span class="tick-sep" style="margin:0 3rem;"> </span>' + html;
+}
+
+function renderMarkets(rates, btc, goldPrice) {
+  const now = new Date();
+  const t = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('mkt-updated').textContent = t;
+  const usd = rates?.TRY;
+  const eur = usd && rates?.EUR ? (usd / rates.EUR) : null;
+  const gbp = usd && rates?.GBP ? (usd / rates.GBP) : null;
+  const chf = usd && rates?.CHF ? (usd / rates.CHF) : null;
+  const rows = [
+    { name: 'USD / TRY', val: usd  ? usd.toFixed(3)  : '—' },
+    { name: 'EUR / TRY', val: eur  ? eur.toFixed(3)  : '—' },
+    { name: 'GBP / TRY', val: gbp  ? gbp.toFixed(3)  : '—' },
+    { name: 'CHF / TRY', val: chf  ? chf.toFixed(3)  : '—' },
+    { name: 'BTC / USD', val: btc  ? '$' + Math.round(btc).toLocaleString('tr') : '—' },
+    { name: 'Altın (ONS)',  val: goldPrice ? '$' + goldPrice.toFixed(1) : '—' },
+  ];
+  document.getElementById('markets-body').innerHTML = rows.map(r => `
+    <div class="market-row"><span class="m-name">${r.name}</span><span class="m-val">${r.val}</span></div>
+  `).join('');
+}
+
+async function fetchCalendar() {
+  const calBody = document.getElementById('cal-body');
+  calBody.innerHTML = `<div class="cal-item"><div class="cal-dot" style="background:#b8962e;animation:pulse 1.5s infinite;"></div><div><div class="cal-title" style="color:var(--ink-3);">Veri ağlarına bağlanıyor...</div></div></div>`;
+  try {
+    const TARGET_URL = 'https://nfs.faireconomy.media/ff_calendar_thisweek.json';
+    const PROXY_URL  = IS_ELECTRON ? TARGET_URL : ('https://api.codetabs.com/v1/proxy?quest=' + TARGET_URL);
+    const data = await safeFetchJson(PROXY_URL, 6500);
+    if (data && Array.isArray(data)) {
+      localStorage.setItem('pusula_calendar_cache', JSON.stringify(data));
+      await processAndRenderCalendar(data, calBody);
+    } else { throw new Error('Geçersiz format'); }
+  } catch(e) { await handleFallback(calBody); }
+}
+
+async function processAndRenderCalendar(data, calBody) {
+  const now = new Date();
+  const filtered = data.map(e => {
+    let ulke = '';
+    if(e.country === 'USD') ulke = 'ABD';
+    else if(e.country === 'EUR') ulke = 'AB';
+    else if(e.country === 'GBP') ulke = 'İNG';
+    else if(e.country === 'JPY') ulke = 'JAP';
+    else if(e.country === 'CNY') ulke = 'ÇİN';
+    else if(e.country === 'TRY') ulke = 'TR';
+    return { title: e.title || '—', country: ulke, importance: e.impact === 'High' ? 3 : e.impact === 'Medium' ? 2 : 1, date: (e.date && !isNaN(new Date(e.date))) ? new Date(e.date) : new Date(), actual: e.actual || '', forecast: e.forecast || '', previous: e.previous || '' };
+  }).filter(e => e.country !== '' && e.importance >= 2 && e.date >= now).sort((a,b) => a.date - b.date).slice(0, 7);
+
+  if (filtered.length > 0) {
+    const translatedEvents = await Promise.all(filtered.map(async e => {
+      let translatedTitle = await googleTranslate(e.title, 'en', 'tr');
+      translatedTitle = translatedTitle.replace(/m\/m/i, '(Aylık)').replace(/y\/y/i, '(Yıllık)').replace(/q\/q/i, '(Çeyreklik)').replace(/Ölçü birimi/i, 'Michigan Üniversitesi').replace(/Tüketici Duyarlılığı/i, 'Tüketici Güven Endeksi').replace(/Tüketici Duyarlılık/i, 'Tüketici Güven Endeksi');
+      e.title = translatedTitle; return e;
+    }));
+    renderCalendarEvents(translatedEvents);
+  } else {
+    calBody.innerHTML = `<div class="cal-item"><div class="cal-dot" style="background:#999;"></div><div><div class="cal-title" style="color:var(--ink-3);">Veri Yok (Hafta Sonu)</div><div class="cal-time">Bugün ve yarın için açıklanması beklenen önemli bir piyasa verisi bulunmuyor.</div></div></div>`;
+  }
+}
+
+async function handleFallback(calBody) {
+  const cachedData = localStorage.getItem('pusula_calendar_cache');
+  if (cachedData) {
+    try {
+      const data = JSON.parse(cachedData);
+      await processAndRenderCalendar(data, calBody);
+      document.getElementById('cal-body').innerHTML += `<div style="text-align:center; font-size:0.55rem; color:#a8a8a8; padding-top:12px;">Son geçerli terminal verileri gösteriliyor.</div>`;
+      return;
+    } catch(err) {}
+  }
+  calBody.innerHTML = `<div class="cal-item"><div class="cal-dot" style="background:#c8411a;"></div><div><div class="cal-title" style="color:var(--ink-3);">Bağlantı Kurulamadı</div><div class="cal-time">Canlı veri kaynağına şu an ulaşılamıyor.</div></div></div>`;
+}
+
+function renderCalendarEvents(events) {
+  const dayNames   = ['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'];
+  const monthNames = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  const CAL_IMPACT_COLOR = { 3: '#c8411a', 2: '#b8962e', 1: '#4a7a55' };
+  let html = events.map(e => {
+    const color  = CAL_IMPACT_COLOR[e.importance] || '#555';
+    const validDate = e.date;
+    const timeStr = `${dayNames[validDate.getDay()]} ${validDate.getDate()} ${monthNames[validDate.getMonth()]} · ${String(validDate.getHours()).padStart(2,'0')}:${String(validDate.getMinutes()).padStart(2,'0')}`;
+    const nums = [e.forecast ? `Bkl: <b>${e.forecast}</b>` : '', e.actual   ? `Ger: <b>${e.actual}</b>` : '', e.previous ? `Önceki: ${e.previous}` : ''].filter(Boolean).join(' &nbsp; ');
+    const countryBadge = e.country ? `<span style="display:inline-block; font-family:var(--mono); font-size:0.55rem; font-weight:600; background:var(--ink); color:var(--paper); padding:2px 5px; border-radius:3px; margin-right:8px; letter-spacing:0.05em; vertical-align:text-bottom;">${e.country}</span>` : '';
+    return `<div class="cal-item"><div class="cal-dot" style="background:${color};flex-shrink:0;"></div><div style="flex:1;min-width:0;"><div class="cal-title" style="display:flex; align-items:center;">${countryBadge}${e.title}</div><div class="cal-time">${timeStr}</div>${nums ? `<div style="font-family:var(--mono);font-size:0.59rem;color:var(--ink-3);margin-top:3px;">${nums}</div>` : ''}</div></div>`;
+  }).join('');
+  document.getElementById('cal-body').innerHTML = html;
+}
+
+async function loadAll() {
+  const logoSpan = document.querySelector('.logo span');
+  logoSpan.style.opacity = '0.5';
+  apiStatus = {}; allNews = []; translateQueue = []; isTranslating = false; crawlQueue = []; isCrawling = false;
+
+  const [ratesData, btcData, goldData] = await Promise.all([
+    safeFetchJson('https://api.exchangerate-api.com/v4/latest/USD'),
+    safeFetchJson('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
+    safeFetchJson(IS_ELECTRON ? 'https://data-asg.goldprice.org/dbXRates/USD' : (CORS + 'https://data-asg.goldprice.org/dbXRates/USD'))
+  ]);
+
+  const rates    = ratesData ? ratesData.rates : null;
+  const btcVal  = btcData   ? parseFloat(btcData.price) : null;
+  const goldVal = goldData  ? goldData.items?.[0]?.xauPrice : null;
+
+  renderMarkets(rates, btcVal, goldVal);
+  buildTicker(rates, btcVal, goldVal);
+  fetchCalendar();
+
+  const rssPromises = RSS_SOURCES.map(src => fetchRSS(src));
+  rssPromises.forEach(p => {
+    p.then(items => {
+      items.forEach(item => {
+        const id = ++newsIdCounter;
+        const priority = detectPriority(item.title);
+        const cat2     = detectCat(item.title, item.cat);
+        allNews.push({ ...item, priority, cat2, id, titleTR: item.lang==='tr'?item.title:null, summaryTR: item.lang==='tr'?item.description:null });
+        if (item.lang === 'en') translateQueue.push({ id, item: { title: item.title, description: item.description } });
+      });
+      filterAndRenderNews();
+      renderApiStatus();
+    });
+  });
+
+  await Promise.allSettled(rssPromises);
+  setTimeout(processTranslationQueue, 500);
+
+  const missingImageItems = [...allNews]
+    .sort((a, b) => ['breaking', 'high', 'normal'].indexOf(a.priority) - ['breaking', 'high', 'normal'].indexOf(b.priority) || b.ts - a.ts)
+    .filter(item => !item.bodyImage && item.link)
+    .slice(0, 12);
+
+  crawlQueue = missingImageItems;
+  setTimeout(processCrawlQueue, 1000);
+
+  logoSpan.style.opacity = '1';
+  document.getElementById('footer-updated').textContent = `Son güncelleme: ${new Date().toLocaleTimeString('tr-TR')}`;
+}
+
+initSettings();
+initFilters();
+loadAll();
+</script>
+</body>
+</html>
